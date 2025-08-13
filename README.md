@@ -12,7 +12,7 @@ It’s pretty bare-bones, but you can place cards, attack towers, and watch unit
 ## 🛠 Tech Stack
 - HTML + CSS + JavaScript
 - Native DOM manipulation
-- 99% vibe coding, 1% hand-written logic (so don’t ask me what’s really inside 😅)
+- 99% vibe coding, 1% hand-written logic (so don’t ask me what’s really inside)
 
 ## 📌 Planned Improvements (or maybe never)
 - Better visuals (the field is too plain right now)
