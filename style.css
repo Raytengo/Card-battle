@@ -1,0 +1,177 @@
+/*===================================角色造型==================================================*/
+.unit .health-bar-container { width: 5vh; height: 0.7vh; }
+.unit.enemy .health-bar { background-color: #e74c3c; }
+.unit.player .health-bar { background-color: #3498db; }
+.unit.enemy .unit-body { filter: saturate(0.5); }
+.knight .unit-body { background-color: #3498db; border: 0.3vh solid #2980b9; }
+.archer .unit-body { background-color: #e74c3c; border: 0.3vh solid #c0392b; }
+.k .unit-body { background-color: #550e6e; border: 0.3vh solid #780b84; }
+.giant .unit-body { background-color: #a97e54; border: 0.3vh solid #7d5e3c; width: 8vh; height: 8vh; }
+/*============================================================================================*/
+
+/* --- 基礎樣式 --- */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+}
+
+/* 響應式視窗容器 */
+#viewport-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* App 總容器，維持 9:16 的長寬比 */
+#app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #2c2c2c;
+    padding: 1.5vh;
+    border-radius: 3vh;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+
+    aspect-ratio: 9 / 16;
+    max-width: 56.25vh; /* height * 9/16 */
+    max-height: 177.77vw; /* width * 16/9 */
+}
+
+/* --- 遊戲容器 --- */
+#game-container {
+    width: 100%;
+    flex-grow: 1;
+    background-color: #5a9a3e;
+    border: 0.5vh solid #6b4a39;
+    border-radius: 2vh;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+}
+
+#game-container.targeting {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:32px;'><text y='32' fill='white'>🎯</text></svg>") 16 16, auto;
+}
+
+/* --- 戰場路徑與橋樑 --- */
+#arena-path { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+#river { position: absolute; top: 48%; width: 100%; height: 8%; background-color: #3498db; z-index: 1; }
+.bridge { position: absolute; top: 46%; width: 10%; height: 12%; background-color: #a17a52; border-left: 0.6vh solid #6b4a39; border-right: 0.6vh solid #6b4a39; z-index: 5; }
+#bridge-left{ left: 20%; }
+#bridge-right{ right: 20%; }
+
+/* --- 塔的通用樣式 --- */
+.tower {
+    width: 16%; height: 12.5%; background-color: #c9a979; border: 0.5vh solid #8c6f4c;
+    border-radius: 1vh; position: absolute; display: flex; justify-content: center;
+    align-items: flex-start; font-weight: bold; color: white; text-shadow: 0.1vh 0.1vh 0.2vh black;
+    z-index: 10;
+}
+.king-tower { width: 19%; height: 14%; }
+.princess-tower { height: 11.5%; }
+
+/* --- 血條樣式 --- */
+.health-bar-container { width: 90%; height: 1.2vh; background-color: #555; border-radius: 0.6vh; margin-top: 0.8vh; overflow: hidden; }
+.health-bar { width: 100%; height: 100%; background-color: #2ecc71; transition: width 0.2s linear; }
+
+/* --- 單位的樣式 --- */
+.unit { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 20; }
+.unit-body {
+    width: 6vh; height: 6vh; border-radius: 50%; display: flex;
+    justify-content: center; align-items: center; color: white;
+    font-size: 1.5vh; font-weight: bold;
+}
+
+
+/* 攻擊與受擊閃爍動畫 */
+@keyframes flash-yellow { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.7); } 100% { box-shadow: 0 0 2vh 1vh rgba(241, 196, 15, 0); } }
+@keyframes flash-red { 0% { filter: brightness(1.5) drop-shadow(0 0 0.5vh #e74c3c); } 100% { filter: brightness(1); } }
+.is-attacking { animation: flash-yellow 0.3s 1; }
+.is-damaged { animation: flash-red 0.2s 1; }
+
+#drag-preview {
+    position: absolute; width: 7vh; height: 7vh; background-color: rgba(255, 255, 255, 0.5);
+    border: 0.3vh dashed #fff; border-radius: 50%; z-index: 999; pointer-events: none; display: none;
+}
+
+#ui-container {
+    width: 100%; padding-top: 1vh; display: flex; flex-direction: column; align-items: center;
+}
+#hand-container { display: flex; justify-content: center; gap: 1.5vh; padding: 1.5vh; }
+.card {
+    width: 9.5vh; height: 12.5vh; background-color: #fff; border: 0.5vh solid #6b4a39; border-radius: 1.2vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-around;
+    cursor: pointer; box-shadow: 0 0.3vh 0.6vh rgba(0,0,0,0.2); transition: all 0.2s ease;
+    position: relative; padding: 0.5vh; box-sizing: border-box;
+}
+.card.selected { border-color: #f1c40f; transform: translateY(-0.5vh); box-shadow: 0 0.6vh 2vh #f1c40f; }
+.card.disabled { background-color: #aaa; cursor: not-allowed; filter: grayscale(80%); }
+.card:not(.disabled):hover { transform: translateY(-0.5vh); }
+.card-name { font-size: 1.8vh; font-weight: bold; color: #333; text-align: center; }
+.card-cost {
+    position: absolute; top: -1.2vh; left: -1.2vh; background-color: #8e44ad;
+    color: white; width: 3.5vh; height: 3.5vh; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: bold; border: 0.3vh solid white; font-size: 2vh;
+}
+.card-icon { font-size: 3.5vh; }
+
+#elixir-bar-container { width: 80%; height: 3vh; background-color: #333; border-radius: 1.5vh; margin-bottom: 1vh; overflow: hidden; border: 0.3vh solid #6b4a39; }
+#elixir-bar { width: 0%; height: 100%; background: linear-gradient(45deg, #d946ef, #8e44ad); transition: width 0.2s linear; }
+#elixir-text { color: white; font-weight: bold; text-shadow: 0.1vh 0.1vh 0.2vh black; margin-bottom: 0.5vh; font-size: 2vh; }
+
+#message-box { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 3vh; border-radius: 1.5vh; font-size: 3.5vh; font-weight: bold; display: none; z-index: 100; }
+
+
+.btn-restart {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(180deg, #ffb347, #ff8300);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 0 #c25b00, 0 6px 12px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.btn-restart:hover {
+background: linear-gradient(180deg, #ffd27f, #ff9e2c);
+box-shadow: 0 4px 0 #c25b00, 0 8px 14px rgba(0, 0, 0, 0.5);
+transform: translateY(-2px);
+}
+
+.btn-restart:active {
+background: linear-gradient(180deg, #ff9e2c, #ff7500);
+box-shadow: 0 2px 0 #c25b00, 0 4px 8px rgba(0, 0, 0, 0.4);
+transform: translateY(2px);
+}
+
+#message-box {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 40px;
+font-weight: bold;
+color: #fff;
+text-align: center;
+background: rgba(0, 0, 0, 0.6);
+padding: 20px 40px;
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+

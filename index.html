@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>山寨皇室戰爭復刻</title>
+    <!-- 引用外部 CSS 樣式表 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="viewport-container">
+        <div id="app-container">
+            <div id="game-container">
+                <div id="arena-path">
+                    <div id="river"></div>
+                    <div id="bridge-left" class="bridge"></div>
+                    <div id="bridge-right" class="bridge"></div>
+                </div>
+                <div id="entities-container"></div>
+                <div id="message-box"></div>
+                <div id="drag-preview"></div>
+            </div>
+            <div id="ui-container">
+                <div id="elixir-text">0</div>
+                <div id="elixir-bar-container"><div id="elixir-bar"></div></div>
+                <div id="hand-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引用外部 JavaScript 檔案 -->
+    <script type="module" src="game.js"></script>
+</body>
+</html>
